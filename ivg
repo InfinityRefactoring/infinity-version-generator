@@ -341,7 +341,7 @@ if [ "$goal" = "" ] ; then
 fi
 
 if [ "$goal" = "$GOAL_GET_VERSION" ] ; then
-    echo $(getProjectVersion)
+    getProjectVersion
     exit 0
 fi
 

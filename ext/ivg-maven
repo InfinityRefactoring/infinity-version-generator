@@ -3,7 +3,13 @@
 PROPERTIES_FILE="src/main/resources/META-INF/source-code.properties"
 
 getProjectVersion() {
-    echo $(mvn help:evaluate -Dexpression=project.version | grep -v '\[')
+    if [ -f "$propertiesFile" ]; then
+        echo $(getPropertyValue "$PROPERTY_PROJECT_VERSION" "$propertiesFile")
+    else
+        showMessage "info" "Not found the \e[4m$propertiesFile\e[24m version properties file."
+        showMessage "fail" "$goal FAILED" true true
+        exit 1
+    fi
 }
 
 setProjectVersion() {
