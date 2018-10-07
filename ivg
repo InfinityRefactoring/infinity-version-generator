@@ -10,17 +10,18 @@ IVG_DIR="$(dirname "$IVG_PATH")"
 source "$IVG_DIR/ivg-config"
 
 #Current config
-propertiesFile=$PROPERTIES_FILE
-versionSuffix=$VERSION_SUFFIX
-onlyChangeSuffix=$ONLY_CHANGE_SUFFIX
+gitCommitMessage=$GIT_COMMIT_MESSAGE
 fixup=$FIXUP
 autosquash=$AUTOSQUASH
-gitCommitMessage=$GIT_COMMIT_MESSAGE
 push=$PUSH
 pushOrigin=$PUSH_ORIGIN
 pushBranch=$PUSH_BRANCH
 pushOptions=$PUSH_OPTIONS
+versionSuffix=$VERSION_SUFFIX
+onlyChangeSuffix=$ONLY_CHANGE_SUFFIX
 strict=$STRICT
+propertiesFile=$PROPERTIES_FILE
+useErrorExitCode=$USE_ERROR_EXIT_CODE
 quiet=$QUIET
 verbose=$VERBOSE
 SHOW_MESSAGE_HEADER=true
@@ -221,71 +222,74 @@ for var in "$@"; do
         showMessage "info" "    ivg validate --suffix=-SNAPSHOT --verbose"
         showMessage "info"
         showMessage "info" "\e[1mGoals\e[0m:"
-        showMessage "info" "validate           Validates the current project version with the version defined in the version properties file. Returns 0 if the project is valid otherwise 1."
-        showMessage "info" "generate           Analyses the project and if necessary generates a new version number."
-        showMessage "info" "get-version        Returns the current project version."
-        showMessage "info" "get-reference      Returns the git commit hash that is reference to the current version."
+        showMessage "info" "validate                  Validates the current project version with the version defined in the version properties file. Returns 0 if the project is valid otherwise 1."
+        showMessage "info" "generate                  Analyses the project and if necessary generates a new version number."
+        showMessage "info" "get-version               Returns the current project version."
+        showMessage "info" "get-reference             Returns the git commit hash that is reference to the current version."
         showMessage "info"
         showMessage "info" "\e[1mOptions\e[0m:"
         showMessage "info" "Long options has priority over short options."
-        showMessage "info" "--import              The path of the extension script that will be imported."
-        showMessage "info" "                      This is useful to import a custom implementation of the \"getProjectVersion()\" and \"setProjectVersion()\" functions"
-        showMessage "info" "                          Default values:"
+        showMessage "info" "--import                  The path of the extension script that will be imported."
+        showMessage "info" "                          This is useful to import a custom implementation of the \"getProjectVersion()\" and \"setProjectVersion()\" functions"
+        showMessage "info" "                              Default values:"
         if [ "$IVG_EXT_FILE_DEFAULT" != "$IVG_EXT_FILE" ]; then
-            showMessage "info" "                              $(pwd)/$IVG_EXT_FILE"
+            showMessage "info" "                                  $(pwd)/$IVG_EXT_FILE"
         fi
-        showMessage "info" "                              $(pwd)/$IVG_EXT_FILE_DEFAULT"
-        showMessage "info" "                              $IVG_EXT_DIR/$IVG_EXT_FILE_DEFAULT"
-        showMessage "info" "                          Example: --import=$IVG_EXT_FILE"
-        showMessage "info" "                          Available extension scripts:"
+        showMessage "info" "                                  $(pwd)/$IVG_EXT_FILE_DEFAULT"
+        showMessage "info" "                                  $IVG_EXT_DIR/$IVG_EXT_FILE_DEFAULT"
+        showMessage "info" "                              Example: --import=$IVG_EXT_FILE"
+        showMessage "info" "                              Available extension scripts:"
 
         for ext in $IVG_EXT_DIR/*
         do
             if [ -f $ext ]; then
-                showMessage "info" "                              --import=$(basename "$ext")"
+                showMessage "info" "                                  --import=$(basename "$ext")"
             fi
         done
 
-        showMessage "info" "--commit-message      The git commit message. The pattern \"$VERSION_PATTERN\" will be override by the version number" 
-        showMessage "info" "                          Default value: $GIT_COMMIT_MESSAGE"
-        showMessage "info" "                          Example: --commit-message=$GIT_COMMIT_MESSAGE"
-        showMessage "info" "--fixup              Enable the use of the \"git commit --fixup\" command to commit the changes"
-        showMessage "info" "                          Default value: $FIXUP"
-        showMessage "info" "                          Example: --fixup, --fixup=false, --fixup=true"
-        showMessage "info" "--autosquash         Enable the use of the \"git rebase -i --autosquash\" command to join the new commit with the previous commit. This only is enabled if the \"--fixup\" too is enabled"
-        showMessage "info" "                          Default value: $FIXUP"
-        showMessage "info" "                          Example: --autosquash, --autosquash=false, --autosquash=true"
-        showMessage "info" "--push                Execute the \"git push\" command if a new version is generated"
-        showMessage "info" "                          Default value: $PUSH"
-        showMessage "info" "                          Example: --push, --push=false, --push=true"
-        showMessage "info" "--push-origin         The origin that will be used to push the changes"
-        showMessage "info" "                          Default value: $PUSH_ORIGIN"
-        showMessage "info" "                          Example: --push-origin=$PUSH_ORIGIN"
-        showMessage "info" "--push-branch         The origin branch that will be used to push the changes"
-        showMessage "info" "                          Default value: $PUSH_BRANCH"
-        showMessage "info" "                          Example: --push-branch=master"
-        showMessage "info" "--push-options        The options that will be used to push the changes"
-        showMessage "info" "                          Default value: $PUSH_OPTIONS"
-        showMessage "info" "                          Example: --push-options=-u"
-        showMessage "info" "--suffix              The version number suffix"
-        showMessage "info" "                          Default value: $VERSION_SUFFIX"
-        showMessage "info" "                          Example: --suffix=some-suffix"
-        showMessage "info" "--only-change-suffix  Enables only the change in the version suffix" 
-        showMessage "info" "                          Default value: $ONLY_CHANGE_SUFFIX"
-        showMessage "info" "                          Example: --only-change-suffix, --only-change-suffix=false, --only-change-suffix=true"
-        showMessage "info" "--strict              Enable the strict mode"
-        showMessage "info" "                          Default value: $STRICT"
-        showMessage "info" "                          Example: --strict, --strict=false, --strict=true"
-        showMessage "info" "--properties-file      The version properties file path"
-        showMessage "info" "                          Default value: $PROPERTIES_FILE"
-        showMessage "info" "                          Example: --properties-file=$PROPERTIES_FILE"
-        showMessage "info" "--quiet               Disable the messages"
-        showMessage "info" "                          Default value: $QUIET"
-        showMessage "info" "                          Example: --quiet, --quiet=false, --quiet=true"
-        showMessage "info" "--verbose             Enable the verbose mode"
-        showMessage "info" "                          Examples: --verbose, --verbose=false, --verbose=true"
-        showMessage "info" "--version             Display the version information and exit"
-        showMessage "info" "-h, --help            Display this help and exit"
+        showMessage "info" "--commit-message          The git commit message. The pattern \"$VERSION_PATTERN\" will be override by the version number" 
+        showMessage "info" "                              Default value: $GIT_COMMIT_MESSAGE"
+        showMessage "info" "                              Example: --commit-message=$GIT_COMMIT_MESSAGE"
+        showMessage "info" "--fixup                   Enable the use of the \"git commit --fixup\" command to commit the changes"
+        showMessage "info" "                              Default value: $FIXUP"
+        showMessage "info" "                              Example: --fixup, --fixup=false, --fixup=true"
+        showMessage "info" "--autosquash              Enable the use of the \"git rebase -i --autosquash\" command to join the new commit with the previous commit. This only is enabled if the \"--fixup\" too is enabled"
+        showMessage "info" "                              Default value: $FIXUP"
+        showMessage "info" "                              Example: --autosquash, --autosquash=false, --autosquash=true"
+        showMessage "info" "--push                    Execute the \"git push\" command if a new version is generated"
+        showMessage "info" "                              Default value: $PUSH"
+        showMessage "info" "                              Example: --push, --push=false, --push=true"
+        showMessage "info" "--push-origin             The origin that will be used to push the changes"
+        showMessage "info" "                              Default value: $PUSH_ORIGIN"
+        showMessage "info" "                              Example: --push-origin=$PUSH_ORIGIN"
+        showMessage "info" "--push-branch             The origin branch that will be used to push the changes"
+        showMessage "info" "                              Default value: $PUSH_BRANCH"
+        showMessage "info" "                              Example: --push-branch=master"
+        showMessage "info" "--push-options            The options that will be used to push the changes"
+        showMessage "info" "                              Default value: $PUSH_OPTIONS"
+        showMessage "info" "                              Example: --push-options=-u"
+        showMessage "info" "--suffix                  The version number suffix"
+        showMessage "info" "                              Default value: $VERSION_SUFFIX"
+        showMessage "info" "                              Example: --suffix=some-suffix"
+        showMessage "info" "--only-change-suffix      Enables only the change in the version suffix" 
+        showMessage "info" "                              Default value: $ONLY_CHANGE_SUFFIX"
+        showMessage "info" "                              Example: --only-change-suffix, --only-change-suffix=false, --only-change-suffix=true"
+        showMessage "info" "--strict                  Enable the strict mode"
+        showMessage "info" "                              Default value: $STRICT"
+        showMessage "info" "                              Example: --strict, --strict=false, --strict=true"
+        showMessage "info" "--properties-file         The version properties file path"
+        showMessage "info" "                              Default value: $PROPERTIES_FILE"
+        showMessage "info" "                              Example: --properties-file=$PROPERTIES_FILE"
+        showMessage "info" "--use-error-exit-code     (Only works in the generate goal) Returns the exit code 1 if the generation has been success"
+        showMessage "info" "                              Default value: $useErrorExitCode"
+        showMessage "info" "                              Example: --use-error-exit-code, --use-error-exit-code=false, --use-error-exit-code=true"
+        showMessage "info" "--quiet                   Disable the messages"
+        showMessage "info" "                              Default value: $QUIET"
+        showMessage "info" "                              Example: --quiet, --quiet=false, --quiet=true"
+        showMessage "info" "--verbose                 Enable the verbose mode"
+        showMessage "info" "                              Examples: --verbose, --verbose=false, --verbose=true"
+        showMessage "info" "--version                 Display the version information and exit"
+        showMessage "info" "-h, --help                Display this help and exit"
         showMessage "info"
         showMessage "info" "\e[1mhttps://github.com/InfinityRefactoring/infinity-version-generator\e[0m"
         exit 0
@@ -299,6 +303,7 @@ for var in "$@"; do
         goal=$GOAL_GET_VERSION_REFERENCE
     else
         quiet=$(getBooleanValue "--quiet" "$var" $quiet true)
+        ivgExtFile2=$(getStringValue "--import" "$var" "$ivgExtFile2" "--import=$IVG_EXT_FILE")
         gitCommitMessage=$(getStringValue "--commit-message" "$var" "$gitCommitMessage" "--commit-message=$GIT_COMMIT_MESSAGE")
         fixup=$(getBooleanValue "--fixup" "$var" $fixup true)
         autosquash=$(getBooleanValue "--autosquash" "$var" $autosquash true)
@@ -310,7 +315,7 @@ for var in "$@"; do
         onlyChangeSuffix=$(getBooleanValue "--only-change-suffix" "$var" $onlyChangeSuffix true)
         strict=$(getBooleanValue "--strict" "$var" $strict true)
         propertiesFile=$(getStringValue "--properties-file" $var "$propertiesFile" "--properties-file=$PROPERTIES_FILE")
-        ivgExtFile2=$(getStringValue "--import" "$var" "$ivgExtFile2" "--import=$IVG_EXT_FILE")
+        useErrorExitCode=$(getBooleanValue "--use-error-exit-code" "$var" $useErrorExitCode true)
         verbose=$(getBooleanValue "--verbose" "$var" $verbose true)
     fi
 done
@@ -491,4 +496,9 @@ if $push ; then
         pushOptions="-q $pushOptions"
     fi
     git push $pushOptions $pushOrigin $pushBranch
+fi
+
+if $useErrorExitCode; then
+    showMessage "warning" "Using error exit code."
+    exit 1
 fi
