@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#Version properties
+PROPERTY_PROJECT_VERSION="project.version"
+PROPERTY_PROJECT_VERSION_TIME="project.version.time"
+PROPERTY_PROJECT_VERSION_SUFFIX="project.version.suffix"
+PROPERTY_GIT_COMMIT_TIME="git.commit.time"
+
+#Default options
+PROPERTIES_FILE="source-code.properties"
+VERSION_SUFFIX=""
+ONLY_CHANGE_SUFFIX=false
+FIXUP=true
+AUTOSQUASH=true
+GIT_COMMIT_MESSAGE="Update to version: [version]"
+VERSION_PATTERN="\[version\]"
+VERSION_TIME_FORMAT="format-local:%Y.%m.%d.%H.%M.%S"
+IVG_EXT_DIR="$IVG_DIR/ext"
+IVG_EXT_FILE="ivg-ext"
+IVG_EXT_FILE_DEFAULT="ivg-maven"
+TEMP_BRANCH_PREFIX="ivg/temp"
+PUSH=false
+PUSH_ORIGIN="origin"
+PUSH_BRANCH=""
+PUSH_OPTIONS=""
+STRICT=false
+QUIET=false
+VERBOSE=false

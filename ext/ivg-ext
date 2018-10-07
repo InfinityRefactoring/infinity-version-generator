@@ -1,0 +1,14 @@
+#!/bin/bash
+
+IVG_VERSION_PATTERN="IVG_VERSION=\"\(.*\)\""
+
+getProjectVersion() {
+    echo $IVG_VERSION
+}
+
+setProjectVersion() {
+    IVG_NEW_VERSION="IVG_VERSION=\"$2\""
+    set +e
+    sed -i "s/$IVG_VERSION_PATTERN/$IVG_NEW_VERSION/g" "$(pwd)/ivg"
+    set -e
+}
